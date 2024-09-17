@@ -1,60 +1,24 @@
+// OrderScreen.js
 import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { CartContext } from '../context/CartContext';
 
 const OrderScreen = ({ navigation }) => {
-  const { cart, clearCart } = useContext(CartContext);
-
-  // State for user input
+  const { cart, placeOrder } = useContext(CartContext);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
 
-  // Calculate total quantity of items in the cart
   const totalQuantity = cart.reduce((total, item) => total + (item.quantity || 1), 0);
 
-  // Handle order confirmation
   const handleOrderConfirmation = () => {
     if (name.trim() && phone.trim() && address.trim()) {
-      // Clear the cart
-      clearCart();
-      // Navigate to Order Success screen
-      navigation.navigate('OrderSuccess');
+      placeOrder({ name, phone, address });
+      navigation.navigate('OrderSuccess'); // Navigate after placing order
     } else {
       alert('Please fill in all fields');
     }
   };
-
-  // Render the header component including input fields and total quantity
-  const renderHeader = () => (
-    <View style={styles.headerContainer}>
-      <Text style={styles.title}>Place Your Order</Text>
-
-      {/* Input fields */}
-      <TextInput
-        style={styles.input}
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Phone Number"
-        keyboardType="phone-pad"
-        value={phone}
-        onChangeText={setPhone}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Address"
-        value={address}
-        onChangeText={setAddress}
-      />
-
-      {/* Total quantity */}
-      <Text style={styles.totalText}>Total Items: {totalQuantity}</Text>
-    </View>
-  );
 
   return (
     <KeyboardAvoidingView
@@ -62,7 +26,31 @@ const OrderScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <FlatList
-        ListHeaderComponent={renderHeader}
+        ListHeaderComponent={
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>Place Your Order</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Name"
+              value={name}
+              onChangeText={setName}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              keyboardType="phone-pad"
+              value={phone}
+              onChangeText={setPhone}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Address"
+              value={address}
+              onChangeText={setAddress}
+            />
+            <Text style={styles.totalText}>Total Items: {totalQuantity}</Text>
+          </View>
+        }
         data={cart}
         keyExtractor={(item) => item.idCategory || item.idDrink || item.idMeal} // Use unique ID
         renderItem={({ item }) => (

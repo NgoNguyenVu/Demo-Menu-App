@@ -1,11 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+  TextInput,
+  Dimensions
+} from 'react-native';
 import axios from 'axios';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icons
+
+const { width } = Dimensions.get('window'); // For responsive width
 
 const DessertScreen = ({ navigation }) => {
   const [desserts, setDesserts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchVisible, setSearchVisible] = useState(false); // State to manage search bar visibility
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch the list of desserts
   const fetchDesserts = async () => {
@@ -22,6 +37,14 @@ const DessertScreen = ({ navigation }) => {
   useEffect(() => {
     fetchDesserts(); // Fetch desserts when the component is mounted
   }, []);
+
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+  };
+
+  const filteredDesserts = desserts.filter(dessert =>
+    dessert.strMeal.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -40,28 +63,65 @@ const DessertScreen = ({ navigation }) => {
   }
 
   return (
-    <FlatList
-      data={desserts}
-      numColumns={2}
-      keyExtractor={(item) => item.idMeal}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.dessertItem}
-          onPress={() => navigation.navigate('DessertDetails', { dessertId: item.idMeal })}
-        >
-          <Image source={{ uri: item.strMealThumb }} style={styles.dessertImage} />
-          <Text style={styles.dessertName}>{item.strMeal}</Text>
-        </TouchableOpacity>
+    <View style={styles.screenContainer}>
+      {/* Toggle Button */}
+      <TouchableOpacity style={styles.searchButton} onPress={() => setSearchVisible(!searchVisible)}>
+        <Icon name="search" size={20} color="#fff" />
+      </TouchableOpacity>
+
+      {/* Search Bar */}
+      {searchVisible && (
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search something..."
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
       )}
-      contentContainerStyle={styles.container}
-    />
+
+      <FlatList
+        data={filteredDesserts}
+        keyExtractor={(item) => item.idMeal}
+        numColumns={2}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.dessertItem}
+            onPress={() => navigation.navigate('DessertDetails', { dessertId: item.idMeal })}
+          >
+            <Image source={{ uri: item.strMealThumb }} style={styles.dessertImage} />
+            <Text style={styles.dessertName}>{item.strMeal}</Text>
+          </TouchableOpacity>
+        )}
+        contentContainerStyle={styles.container}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  screenContainer: {
+    flex: 1,
     padding: 10,
-    backgroundColor: '#fdfdfd',
+    backgroundColor: '#fdfdfd', // Match FoodScreen and DrinkScreen background color
+  },
+  searchButton: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    zIndex: 1,
+    backgroundColor: '#3498db',
+    borderRadius: 50,
+    padding: 10,
+  },
+  searchInput: {
+    marginVertical: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    width: width * 0.9, // Responsive width
+    alignSelf: 'center',
   },
   loaderContainer: {
     flex: 1,

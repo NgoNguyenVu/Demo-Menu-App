@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Dimensions } from 'react-native';
-import { CartContext } from '../context/CartContext';  // Import CartContext
-import { FavoritesContext } from '../context/FavoritesContext';  // Import FavoritesContext
-import { fetchCategories } from '../api';  // Import API fetchCategories
-import Icon from 'react-native-vector-icons/FontAwesome';  // Import icons
+import { CartContext } from '../context/CartContext'; // Import CartContext
+import { FavoritesContext } from '../context/FavoritesContext'; // Import FavoritesContext
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import icons
 
 const { width } = Dimensions.get('window');
 
@@ -12,8 +11,8 @@ const FoodDetailScreens = ({ route }) => {
   const [categoryDetails, setCategoryDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { addToCart } = useContext(CartContext);  // Sử dụng CartContext
-  const { addToFavorites } = useContext(FavoritesContext);  // Sử dụng FavoritesContext
+  const { addToCart } = useContext(CartContext); // Use CartContext
+  const { addToFavorites } = useContext(FavoritesContext); // Use FavoritesContext
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([
@@ -24,8 +23,9 @@ const FoodDetailScreens = ({ route }) => {
   // Fetch category details
   const fetchCategoryDetails = async (categoryId) => {
     try {
-      const categories = await fetchCategories();
-      const category = categories.find((cat) => cat.idCategory === categoryId);
+      const response = await fetch('https://www.themealdb.com/api/json/v1/1/categories.php');
+      const data = await response.json();
+      const category = data.categories.find((cat) => cat.idCategory === categoryId);
       setCategoryDetails(category);
       setLoading(false);
     } catch (err) {
@@ -34,14 +34,14 @@ const FoodDetailScreens = ({ route }) => {
     }
   };
 
-  // Thêm món ăn vào giỏ hàng
+  // Add item to cart
   const handleAddToCart = () => {
     addToCart(categoryDetails);
   };
 
-  // Thêm món ăn vào danh sách yêu thích
+  // Add item to favorites
   const handleAddToFavorites = () => {
-    addToFavorites(categoryDetails);  // Sử dụng context để thêm vào yêu thích
+    addToFavorites(categoryDetails); // Use context to add to favorites
   };
 
   const handleSubmitComment = () => {
@@ -53,7 +53,7 @@ const FoodDetailScreens = ({ route }) => {
   };
 
   useEffect(() => {
-    fetchCategoryDetails(categoryId);  // Fetch category details khi mount component
+    fetchCategoryDetails(categoryId); // Fetch category details on component mount
   }, [categoryId]);
 
   if (loading) {
@@ -85,7 +85,7 @@ const FoodDetailScreens = ({ route }) => {
             {categoryDetails.strCategoryDescription}
           </Text>
 
-          {/* Nút Order và Add to Favorites */}
+          {/* Order and Add to Favorites Buttons */}
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.button}
@@ -124,7 +124,7 @@ const FoodDetailScreens = ({ route }) => {
               style={styles.submitCommentButton}
               onPress={handleSubmitComment}
             >
-              <Text style={styles.buttonText}>Submit  </Text>
+              <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
           </View>
 
@@ -307,8 +307,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
-
 export default FoodDetailScreens;
-  

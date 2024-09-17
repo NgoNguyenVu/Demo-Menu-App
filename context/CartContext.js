@@ -5,6 +5,7 @@ export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [orderDetails, setOrderDetails] = useState(null); // Add state for order details
 
   const addToCart = (item) => {
     setCart((prevCart) => {
@@ -68,8 +69,16 @@ export const CartProvider = ({ children }) => {
     setCart([]);
   };
 
+  const placeOrder = (userDetails) => {
+    setOrderDetails({
+      cartItems: cart,
+      ...userDetails
+    });
+    clearCart();
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, clearCart, placeOrder, orderDetails }}>
       {children}
     </CartContext.Provider>
   );
