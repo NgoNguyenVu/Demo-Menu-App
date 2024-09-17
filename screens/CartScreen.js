@@ -12,7 +12,7 @@ const CartScreen = () => {
 
   const handlePlaceOrder = () => {
     if (cart.length === 0) {
-      alert('Your cart is empty. Add items to the cart before placing an order.');
+      alert('Your cart is empty.');
     } else {
       navigation.navigate('Order'); // Navigate to Order screen
     }

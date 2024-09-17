@@ -18,6 +18,7 @@ import OrderScreen from './screens/OrderScreen';
 import OrderSuccessScreen from './screens/OrderSuccessScreen';
 import OrderCompleteScreen from './screens/OrderCompleteScreen'; // Import OrderCompleteScreen
 import FavoritesScreen from './screens/FavoritesScreen';
+import LoginScreen from './screens/LoginScreen'; // Import LoginScreen
 
 import { CartProvider } from './context/CartContext'; // Cart context
 import { FavoritesProvider } from './context/FavoritesContext'; // Favorites context
@@ -64,7 +65,8 @@ const App = () => {
     <CartProvider>
       <FavoritesProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="DrawerNavigator">
+          <Stack.Navigator initialRouteName="Login">
+            <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
             <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} options={{ headerShown: false }} />
             <Stack.Screen name="FoodDetailScreens" component={FoodDetailScreens} options={{ title: 'Food Details' }} />
             <Stack.Screen name="DrinkDetails" component={DrinkDetailsScreen} options={{ title: 'Drink Details' }} />

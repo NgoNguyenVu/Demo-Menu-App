@@ -20,6 +20,14 @@ const SettingsScreen = ({ navigation }) => {
     Alert.alert('Profile updated successfully!');
   };
 
+  const handleLogout = () => {
+    // Reset navigation stack and navigate to LoginScreen
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+  };
+
   return (
     <View style={styles.container}>
       {/* Profile Picture */}
@@ -103,6 +111,14 @@ const SettingsScreen = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>View Ordered Items</Text>
       </TouchableOpacity>
+
+      {/* Logout Button */}
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={handleLogout}
+      >
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -180,6 +196,13 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  logoutButton: {
+    backgroundColor: '#e74c3c',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
   },
 });
 
