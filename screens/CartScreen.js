@@ -17,44 +17,56 @@ const CartScreen = () => {
       navigation.navigate('Order'); // Navigate to Order screen
     }
   };
-  
+
+  const renderCartItem = ({ item }) => {
+    // Check if item is a drink, dessert, or category and display accordingly
+    const isDrink = item.idDrink;
+    const isDessert = item.idMeal;
+    const isCategory = item.idCategory;
+
+    return (
+      <View style={styles.itemContainer}>
+        {/* Display item image */}
+        <Image
+          source={{ uri: isDrink ? item.strDrinkThumb : isDessert ? item.strMealThumb : item.strCategoryThumb }}
+          style={styles.itemImage}
+        />
+        
+        {/* Display item name and quantity */}
+        <View style={styles.detailsContainer}>
+          <Text style={styles.itemText}>{isDrink ? item.strDrink : isDessert ? item.strMeal : item.strCategory}</Text>
+          <View style={styles.quantityContainer}>
+            <TouchableOpacity onPress={() => decreaseQuantity(isDrink ? item.idDrink : isDessert ? item.idMeal : item.idCategory)}>
+              <Text style={styles.quantityButton}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.quantityText}>{item.quantity || 1}</Text>
+            <TouchableOpacity onPress={() => increaseQuantity(isDrink ? item.idDrink : isDessert ? item.idMeal : item.idCategory)}>
+              <Text style={styles.quantityButton}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        {/* Remove button */}
+        <TouchableOpacity
+          onPress={() => removeFromCart(isDrink ? item.idDrink : isDessert ? item.idMeal : item.idCategory)}
+          style={styles.removeButton}
+        >
+          <Text style={styles.buttonText}>Remove</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Your Cart</Text>
+      <Text style={styles.title}>My Cart</Text>
       {cart.length === 0 ? (
         <Text style={styles.emptyText}>Your cart is empty.</Text>
       ) : (
         <FlatList
           data={cart}
-          keyExtractor={(item) => item.idCategory}
-          renderItem={({ item }) => (
-            <View style={styles.itemContainer}>
-              {/* Display item image */}
-              <Image source={{ uri: item.strCategoryThumb }} style={styles.itemImage} />
-
-              {/* Display item name and quantity */}
-              <View style={styles.detailsContainer}>
-                <Text style={styles.itemText}>{item.strCategory}</Text>
-                <View style={styles.quantityContainer}>
-                  <TouchableOpacity onPress={() => decreaseQuantity(item.idCategory)}>
-                    <Text style={styles.quantityButton}>-</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.quantityText}>{item.quantity || 1}</Text>
-                  <TouchableOpacity onPress={() => increaseQuantity(item.idCategory)}>
-                    <Text style={styles.quantityButton}>+</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              {/* Remove button */}
-              <TouchableOpacity
-                onPress={() => removeFromCart(item.idCategory)}
-                style={styles.removeButton}
-              >
-                <Text style={styles.buttonText}>Remove</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          keyExtractor={(item) => item.idDrink || item.idMeal || item.idCategory}
+          renderItem={renderCartItem}
         />
       )}
       {/* Display total quantity */}

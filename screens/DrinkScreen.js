@@ -10,7 +10,7 @@ const DrinkScreen = ({ navigation }) => {
   // Fetch the list of alcoholic drinks
   const fetchDrinks = async () => {
     try {
-      const response = await axios.get('https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Alcoholic');
+      const response = await axios.get('https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=Cocktail');
       setDrinks(response.data.drinks);
       setLoading(false);
     } catch (err) {

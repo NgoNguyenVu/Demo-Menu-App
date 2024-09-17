@@ -1,17 +1,55 @@
-import React, { createContext, useContext } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { FavoritesContext } from '../context/FavoritesContext';
 import { CartContext } from '../context/CartContext';
 import { useNavigation } from '@react-navigation/native';
 
 const FavoritesScreen = () => {
-  const { favorites, removeFromFavorites, addToFavorites } = useContext(FavoritesContext);
+  const { favorites, removeFromFavorites } = useContext(FavoritesContext);
   const { addToCart } = useContext(CartContext);
   const navigation = useNavigation();
 
   const handleAddToCart = (item) => {
     addToCart(item);
     navigation.navigate('Order'); // Navigate to Order screen
+  };
+
+  const renderFavoriteItem = ({ item }) => {
+    // Check if item is a drink, dessert, or category and display accordingly
+    const isDrink = item.idDrink;
+    const isDessert = item.idMeal;
+    const isCategory = item.idCategory;
+
+    return (
+      <View style={styles.itemContainer}>
+        {/* Display item image */}
+        <Image
+          source={{ uri: isDrink ? item.strDrinkThumb : isDessert ? item.strMealThumb : item.strCategoryThumb }}
+          style={styles.itemImage}
+        />
+        
+        {/* Display item name */}
+        <View style={styles.detailsContainer}>
+          <Text style={styles.itemText}>{isDrink ? item.strDrink : isDessert ? item.strMeal : item.strCategory}</Text>
+        </View>
+        
+        {/* Add to cart button */}
+        <TouchableOpacity
+          onPress={() => handleAddToCart(item)}
+          style={styles.addButton}
+        >
+          <Text style={styles.buttonText}>Order</Text>
+        </TouchableOpacity>
+        
+        {/* Remove button */}
+        <TouchableOpacity
+          onPress={() => removeFromFavorites(item)}
+          style={styles.removeButton}
+        >
+          <Text style={styles.buttonText}>Remove</Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
@@ -22,34 +60,8 @@ const FavoritesScreen = () => {
       ) : (
         <FlatList
           data={favorites}
-          keyExtractor={(item) => item.idCategory}
-          renderItem={({ item }) => (
-            <View style={styles.itemContainer}>
-              {/* Display item image */}
-              <Image source={{ uri: item.strCategoryThumb }} style={styles.itemImage} />
-
-              {/* Display item name */}
-              <View style={styles.detailsContainer}>
-                <Text style={styles.itemText}>{item.strCategory}</Text>
-              </View>
-
-              {/* Add to cart button */}
-              <TouchableOpacity
-                onPress={() => handleAddToCart(item)}
-                style={styles.addButton}
-              >
-                <Text style={styles.buttonText}>Order</Text>
-              </TouchableOpacity>
-
-              {/* Remove button */}
-              <TouchableOpacity
-                onPress={() => removeFromFavorites(item)}
-                style={styles.removeButton}
-              >
-                <Text style={styles.buttonText}>Remove</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          keyExtractor={(item) => item.idDrink || item.idMeal || item.idCategory}
+          renderItem={renderFavoriteItem}
         />
       )}
     </View>

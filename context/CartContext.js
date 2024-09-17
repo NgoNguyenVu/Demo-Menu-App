@@ -1,21 +1,25 @@
 // CartContext.js
 import React, { createContext, useState } from 'react';
 
-// Create CartContext
 export const CartContext = createContext();
 
-// CartContext provider
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);  // Initialize cart as an empty array
+  const [cart, setCart] = useState([]);
 
   const addToCart = (item) => {
     setCart((prevCart) => {
-      // Check if item already exists
-      const existingItem = prevCart.find((cartItem) => cartItem.idCategory === item.idCategory);
+      // Check if the item already exists (handles food, drinks, and desserts)
+      const existingItem = prevCart.find((cartItem) =>
+        item.idCategory ? cartItem.idCategory === item.idCategory :
+        item.idDrink ? cartItem.idDrink === item.idDrink :
+        cartItem.idMeal === item.idMeal
+      );
       if (existingItem) {
         // If item exists, increase the quantity
         return prevCart.map((cartItem) =>
-          cartItem.idCategory === item.idCategory
+          (item.idCategory && cartItem.idCategory === item.idCategory) ||
+          (item.idDrink && cartItem.idDrink === item.idDrink) ||
+          (item.idMeal && cartItem.idMeal === item.idMeal)
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
@@ -26,23 +30,33 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = (idCategory) => {
-    setCart((prevCart) => prevCart.filter((item) => item.idCategory !== idCategory));
+  const removeFromCart = (id) => {
+    setCart((prevCart) => prevCart.filter((item) =>
+      item.idCategory ? item.idCategory !== id :
+      item.idDrink ? item.idDrink !== id :
+      item.idMeal !== id
+    ));
   };
 
-  const increaseQuantity = (idCategory) => {
+  const increaseQuantity = (id) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.idCategory === idCategory ? { ...item, quantity: item.quantity + 1 } : item
+        (item.idCategory && item.idCategory === id) ||
+        (item.idDrink && item.idDrink === id) ||
+        (item.idMeal && item.idMeal === id)
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
       )
     );
   };
 
-  const decreaseQuantity = (idCategory) => {
+  const decreaseQuantity = (id) => {
     setCart((prevCart) =>
       prevCart
         .map((item) =>
-          item.idCategory === idCategory && item.quantity > 1
+          (item.idCategory && item.idCategory === id) ||
+          (item.idDrink && item.idDrink === id) ||
+          (item.idMeal && item.idMeal === id)
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
